@@ -1,0 +1,114 @@
+﻿@model IEnumerable<TasksTODO.Models.TasksModel>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<p>
+    <a asp-action="GetCreate">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskTheme)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeadLine)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckComplete)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaskTheme)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeadLine)
+                </td>
+                <td>
+                <td>
+                    <input type="checkbox" id="checkbox-@item.TaskID" name="CheckComplete" @(item.CheckComplete ? "checked" : "") onchange="updateCompleteStatus(@item.TaskID, this)">
+                    <label for="checkbox-@item.TaskID"></label>
+                </td>
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "GetUpdate", new { id = item.TaskID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.TaskID }) |
+                    @Html.ActionLink("Delete", "GetDelete", new { id = item.TaskID })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    window.onload = function () {
+        var checkboxes = document.getElementsByClassName('complete-checkbox');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].onchange = function () {
+                var taskId = this.id.split('-')[1];
+                updateCompleteStatus(taskId, this);
+            };
+        }
+    };
+    function updateCompleteStatus(taskId, checkbox) {
+        var isChecked = checkbox.checked;
+
+        fetch(`/Task/${taskId}/complete`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                taskId: taskId,
+                isChecked: isChecked
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                var statusMessage = document.getElementById('status-' + taskId);
+                statusMessage.innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    window.onload = function () {
+        var checkboxes = document.getElementsByClassName('complete-checkbox');
+        for (var i = 0; i < checkboxes.length; i++) {
+            var taskId = checkboxes[i].dataset.taskId;
+            var isChecked = checkboxes[i].checked;
+
+            checkboxes[i].onchange = function () {
+                updateCompleteStatus(taskId, this);
+            };
+        }
+    };
+</script>
