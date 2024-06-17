@@ -10,11 +10,9 @@ namespace TasksTODO.Controllers
     public class TaskController : Controller
     {
         private ITaskService _tasksService;
-        private readonly ILogger<TaskController> _logger;
 
-        public TaskController(ILogger<TaskController> logger, ITaskService taskService)
+        public TaskController(ITaskService taskService)
         {
-            _logger = logger;
             _tasksService = taskService;
         }
         [HttpGet("/read")]
@@ -30,6 +28,7 @@ namespace TasksTODO.Controllers
                     TaskTheme = item.TaskTheme,
                     Description = item.Description,
                     DeadLine = item.DeadLine,
+                    CheckComplete = item.CheckComplete
                 });
             }
             return View("View", a);
@@ -40,7 +39,7 @@ namespace TasksTODO.Controllers
         {
             return View("Create");
         }
-        [HttpPost("/createfinish")]
+        [HttpPost("/createcomplete")]
         public IActionResult PostCreate([FromForm] string TaskTheme, [FromForm] string Description, [FromForm] DateTime DeadLine)
         {
             _tasksService.CreateTasks(TaskTheme, Description, DeadLine);
@@ -56,6 +55,7 @@ namespace TasksTODO.Controllers
                 TaskTheme = temp.TaskTheme,
                 Description = temp.Description,
                 DeadLine = temp.DeadLine,
+                CheckComplete = temp.CheckComplete
             };
             return View("Delete", a);
         }
@@ -75,6 +75,7 @@ namespace TasksTODO.Controllers
                 TaskTheme = temp.TaskTheme,
                 Description = temp.Description,
                 DeadLine = temp.DeadLine,
+                CheckComplete = temp.CheckComplete
             };
             return View("Update", a);
         }

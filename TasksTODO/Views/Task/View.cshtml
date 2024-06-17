@@ -45,12 +45,16 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.DeadLine)
-                </td>
+                </td>   
                 <td>
-                <td>
-                    <input type="checkbox" id="checkbox-@item.TaskID" name="CheckComplete" @(item.CheckComplete ? "checked" : "") onchange="updateCompleteStatus(@item.TaskID, this)">
-                    <label for="checkbox-@item.TaskID"></label>
-                </td>
+                    @if (item.CheckComplete)
+                    {
+                        <button type="button" class="btn btn-success complete-button" data-task-id="@item.TaskID">  Complete  </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-warning complete-button" data-task-id="@item.TaskID">Not Complete</button>
+                    }
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "GetUpdate", new { id = item.TaskID }) |
@@ -63,16 +67,17 @@
 
 <script>
     window.onload = function () {
-        var checkboxes = document.getElementsByClassName('complete-checkbox');
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].onchange = function () {
-                var taskId = this.id.split('-')[1];
-                updateCompleteStatus(taskId, this);
-            };
-        }
+        var buttons = document.querySelectorAll('.complete-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                toggleCompleteStatus(button);
+            });
+        });
     };
-    function updateCompleteStatus(taskId, checkbox) {
-        var isChecked = checkbox.checked;
+
+    function toggleCompleteStatus(button) {
+        var taskId = button.dataset.taskId;
+        var isComplete = button.classList.contains('btn-success');
 
         fetch(`/Task/${taskId}/complete`, {
             method: 'PUT',
@@ -81,7 +86,7 @@
             },
             body: JSON.stringify({
                 taskId: taskId,
-                isChecked: isChecked
+                isComplete: !isComplete
             })
         })
             .then(response => {
@@ -91,6 +96,9 @@
                 return response.text();
             })
             .then(data => {
+                button.innerText = isComplete ? 'Not Complete' : 'Complete';
+                button.classList.toggle('btn-success');
+                button.classList.toggle('btn-warning');
                 var statusMessage = document.getElementById('status-' + taskId);
                 statusMessage.innerHTML = data;
             })
@@ -98,16 +106,5 @@
                 console.error('Error:', error);
             });
     }
-
-    window.onload = function () {
-        var checkboxes = document.getElementsByClassName('complete-checkbox');
-        for (var i = 0; i < checkboxes.length; i++) {
-            var taskId = checkboxes[i].dataset.taskId;
-            var isChecked = checkboxes[i].checked;
-
-            checkboxes[i].onchange = function () {
-                updateCompleteStatus(taskId, this);
-            };
-        }
-    };
 </script>
+

@@ -20,7 +20,9 @@ namespace EF_Tasks_Data
                 {
                     TaskTheme = theme,
                     Description = description,
-                    DeadLine = deadline
+                    DeadLine = deadline,
+                    CheckComplete = false,
+                    
                 };
 
                 Mycontext.Tasks.Add(item);
@@ -34,10 +36,10 @@ namespace EF_Tasks_Data
             using (Context Mycontext = new Context())
             {
                 List<Task> allTasks = Mycontext.Tasks.ToList();
-                foreach (Task task in allTasks)
-                {
-                    Console.WriteLine($"Task ID: {task.TaskID}, Theme: {task.TaskTheme}, Description: {task.Description}, Deadline: {task.DeadLine}, Complete? {task.CheckComplete}");
-                }
+                //foreach (Task task in allTasks)
+                //{
+                //    Console.WriteLine($"Task ID: {task.TaskID}, Theme: {task.TaskTheme}, Description: {task.Description}, Deadline: {task.DeadLine}, Complete? {task.CheckComplete}");
+                //}
                 return allTasks;
             }
         }

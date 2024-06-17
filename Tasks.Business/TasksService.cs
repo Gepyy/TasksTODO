@@ -1,4 +1,5 @@
 ﻿using EF_Tasks_Data;
+using EF_Tasks_Data.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace Tasks.Business
                     TaskTheme = task.TaskTheme,
                     Description = task.Description,
                     DeadLine = task.DeadLine,
+                    CheckComplete = task.CheckComplete
                 });
             }
             return listDTO;
@@ -54,7 +56,8 @@ namespace Tasks.Business
                 TaskID = temp.TaskID,
                 TaskTheme = temp.TaskTheme,
                 Description = temp.Description,
-                DeadLine = temp.DeadLine
+                DeadLine = temp.DeadLine,
+                CheckComplete = temp.CheckComplete
             };
             return obj;
         }
